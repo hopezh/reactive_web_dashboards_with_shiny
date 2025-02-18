@@ -23,8 +23,11 @@ with ui.sidebar(bg='#f8f8f8'):
         selected=['Adelie', 'Chinstrap', 'Gentoo'],
     )
 
+    ui.input_action_button('refresh', 'Refresh')
+
 # refactor filter func as a reactive calc
 @reactive.calc
+@reactive.event(input.refresh, ignore_none=False)
 def filter_data():
     # print('filtered')
     df_subset = df.filter(
