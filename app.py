@@ -23,11 +23,22 @@ with ui.sidebar(bg='#f8f8f8'):
         selected=['Adelie', 'Chinstrap', 'Gentoo'],
     )
 
-    ui.input_action_button('refresh', 'Refresh')
+    ui.input_text('new_label', 'New Label')
+    ui.input_action_button('update', 'Update')
+
+
+@reactive.effect()
+@reactive.event(input.update)
+def update_label():
+    ui.update_checkbox_group(
+        'species',
+        label = input.new_label()
+    )
+    ui.update_text('new_label', value='')
 
 # refactor filter func as a reactive calc
 @reactive.calc
-@reactive.event(input.refresh, ignore_none=False)
+@reactive.event(input.update, ignore_none=False)
 def filter_data():
     # print('filtered')
     df_subset = df.filter(
