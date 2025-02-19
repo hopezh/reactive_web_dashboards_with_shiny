@@ -47,45 +47,52 @@ def filter_data():
     )
     return df_subset
 
+# --- UI -----------------------------------------------------------------------
 
-with ui.layout_columns():
-    with ui.value_box(theme='blue'):
-        'Mean Beak Length'
-        @render.text
-        def mean_beak_len():
-            mbl = filter_data().select(pl.mean('bill_length_mm').round(2)).item()
-            return mbl
+with ui.nav_panel('Plots'):
+    
+    with ui.layout_columns():
+        with ui.value_box(theme='blue'):
+            'Mean Beak Length'
+            @render.text
+            def mean_beak_len():
+                mbl = filter_data().select(pl.mean('bill_length_mm').round(2)).item()
+                return mbl
 
+        with ui.value_box(theme='blue'):
+            'Mean Beak Depth'
+            @render.text
+            def mean_beak_depth():
+                mbd = filter_data().select(pl.mean('bill_depth_mm').round(2)).item()
+                return mbd
 
-with ui.layout_columns():
-    with ui.card():
-        'Plot'
+    with ui.layout_columns():
+        with ui.card():
+            'Plot'
+            ui.input_checkbox('show_species', 'Show Species', value=True)
+            @render_plotly
+            def plot():
+                # df_subset = df.filter(pl.col('body_mass_g') < input.mass())
+                df_subset = filter_data()
 
-        ui.input_checkbox('show_species', 'Show Species', value=True)
-
-        @render_plotly
-        def plot():
-            # df_subset = df.filter(pl.col('body_mass_g') < input.mass())
-            df_subset = filter_data()
-
-            if input.show_species():
-                return px.scatter(
-                    df_subset, 
-                    x='bill_depth_mm',
-                    y='bill_length_mm',
-                    color='species'
-                )
-            else:
-                return px.scatter(
-                    df_subset, 
-                    x='bill_depth_mm',
-                    y='bill_length_mm',
-                )
+                if input.show_species():
+                    return px.scatter(
+                        df_subset, 
+                        x='bill_depth_mm',
+                        y='bill_length_mm',
+                        color='species'
+                    )
+                else:
+                    return px.scatter(
+                        df_subset, 
+                        x='bill_depth_mm',
+                        y='bill_length_mm',
+                    )
         
+with ui.nav_panel('Data'):
 
     with ui.card():
         "Raw Data"
-        
         @render.data_frame
         def data():
             # df_subset = df.filter(pl.col('body_mass_g') < input.mass())
